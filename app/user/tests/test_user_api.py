@@ -39,10 +39,10 @@ class PublicUserApiTests(TestCase):
         self.assertTrue(user.check_password(payload['password']))
         self.assertNotIn('password', res.data)
 
-    def test_user_with_email_exists_Error(self):
+    def test_user_with_email_exists_error(self):
         """Test error returned if user with email exists."""
         payload = {
-            'email': ' test@example.com',
+            'email': 'test@example.com',
             'password': 'testpass123',
             'name': 'Test Name',
         }
@@ -84,7 +84,7 @@ class PublicUserApiTests(TestCase):
         self.assertIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_Create_token_bad_Crendentials(self):
+    def test_create_token_bad_crendentials(self):
         """Test returns error if credentials invalid"""
         create_user(email='test@example.com', password='goodpass')
 
@@ -94,7 +94,7 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_Create_token_blank_password(self):
+    def test_create_token_blank_password(self):
         """Test posting a blank password returns an error."""
         payload = {'email': 'test@example.com', 'password': ''}
         res = self.client.post(TOKEN_URL, payload)
@@ -107,6 +107,7 @@ class PublicUserApiTests(TestCase):
         res = self.client.get(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateUserApiTests(TestCase):
     """Test API request that require authentication."""
@@ -144,5 +145,5 @@ class PrivateUserApiTests(TestCase):
 
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
-        self.assertEqual(self.user.check_password(payload['password']))
+        self.assertTrue(self.user.check_password(payload['password']))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
